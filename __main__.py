@@ -5,18 +5,21 @@ import sys
 import json
 import time
 
-def read_cache() -> str:
+def update_data(uri: str, value: str):
     with open("/home/james/ghstats/cache.json") as f:
-        return f.read()
+        data_cache = f.read()
 
-def get_data(uri: str, value: str) -> str:
     with open("/home/james/ghstats/cache.json", "w") as f:
-        if read_cache() == "" or time.time() - json.loads(read_cache())["ghstat_unix"] > 3600:
+        if not ':' in data_cache or time.time() - json.loads(data_cache)["ghstat_unix"] > 60:
             data = requests.get(uri).json()
             data["ghstat_unix"] = time.time()
             f.write(json.dumps(data))
 
-    return json.loads(read_cache())[value]
+            return data[value]
+
+        f.write(data_cache)
+
+        return json.loads(data_cache)[value]
 
 
 def main() -> None:
@@ -53,7 +56,7 @@ def main() -> None:
 
     uri = f"https://api.github.com/users/{user}"
 
-    print(get_data(uri, value))
+    print(update_data(uri, value))
 
 
 if __name__ == "__main__":
