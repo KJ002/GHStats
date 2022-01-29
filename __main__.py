@@ -10,7 +10,7 @@ def update_data(uri: str, value: str):
         data_cache = f.read()
 
     with open("/home/james/ghstats/cache.json", "w") as f:
-        if not ':' in data_cache or time.time() - json.loads(data_cache)["ghstat_unix"] > 60:
+        if not ':' in data_cache or time.time() - json.loads(data_cache)["ghstat_unix"] > 3600:
             data = requests.get(uri).json()
             data["ghstat_unix"] = time.time()
             f.write(json.dumps(data))
